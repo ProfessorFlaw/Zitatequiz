@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politiker-Zitate Quiz mit Multiple-Choice Hilfe</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #16a085;
+            --bg-color: #f5f6fa;
+            --card-bg: #ffffff;
+            --text-color: #2f3640;
+            --muted-text: #718093;
+            --highlight: #e74c3c;
+            --help-color: #2980b9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        main {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .progress-bar {
+            background: #dcdde1;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--accent-color);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-text {
+            font-size: 0.95rem;
+            color: var(--muted-text);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .quiz-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e1b12c22;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .quote-text {
+            font-family: "Georgia", Georgia, serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--primary-color);
+            margin: 0 0 25px 0;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        /* Help Options Styling */
+        .help-area {
+            display: none;
+            margin-bottom: 20px;
+            background: #fdfefe;
+            border: 1px solid #dcdde1;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .help-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--help-color);
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .options-grid {
+            display: block;
+        }
+
+        .option-item {
+            background: #f1f2f6;
+            border: 1px solid #ced6e0;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #57606f;
+        }
+
+        .solution-area {
+            background: #eef9f6;
+            border-radius: 6px;
+            border: 1px solid #a3e4d7;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .author {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0 0 5px 0;
+        }
+
+        .role {
+            font-size: 1rem;
+            color: var(--muted-text);
+            margin: 0 0 12px 0;
+        }
+
+        .context {
+            font-size: 0.95rem;
+            background: #ffffff;
+            padding: 10px 12px;
+            border-radius: 4px;
+            margin: 0;
+            border-left: 3px solid var(--accent-color);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+        }
+
+        .btn-help {
+            background-color: var(--help-color);
+            color: white;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn-help:hover {
+            background-color: #1f618d;
+        }
+
+        .btn-show {
+            background-color: var(--primary-color);
+            color: white;
+            flex: 2;
+            min-width: 180px;
+        }
+
+        .btn-show:hover {
+            background-color: #34495e;
+        }
+
+        .btn-next {
+            background-color: var(--accent-color);
+            color: white;
+            flex: 1;
+            width: 100%;
+            display: none;
+        }
+
+        .btn-next:hover {
+            background-color: #117a65;
+        }
+
+        .end-screen {
+            text-align: center;
+            display: none;
+            padding: 40px 20px;
+        }
+
+        .end-screen h2 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .btn-restart {
+            background-color: var(--accent-color);
+            color: white;
+            max-width: 200px;
+            margin: 20px auto 0 auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Politiker Ziate Quiz</h1>
+        des WiPo-Profils für das Sommerfest
+    </header>
+
+    <main>
+        <div id="game-container">
+            <div class="status-text" id="status-text">Frage 1 von 30</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+
+            <div class="quiz-card">
+                <div>
+                    <p class="quote-text" id="quote-display">„Zitat lädt...“</p>
+                    
+                    <!-- Help Area -->
+                    <div class="help-area" id="help-area">
+                        <p class="help-title">💡 Mögliche Antworten (Multiple Choice):</p>
+                        <div class="options-grid" id="options-grid">
+                            <!-- Options injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Solution Area -->
+                    <div class="solution-area" id="solution-area">
+                        <div class="author" id="author-display">Name des Politikers</div>
+                        <div class="role" id="role-display">Partei / Rolle</div>
+                        <p class="context" id="context-display">Kontext-Informationen...</p>
+                    </div>
+                </div>
+
+                <div class="btn-container">
+                    <button class="btn-help" id="btn-help" onclick="showHelp()">💡 Hilfe</button>
+                    <button class="btn-show" id="btn-show" onclick="showSolution()">Antwort anzeigen</button>
+                    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Nächste Frage &rarr;</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-card end-screen" id="end-screen">
+            <h2>Geschafft!</h2>
+            <p>Du hast alle 30 Zitate durchgespielt. Möchtest du es noch einmal mit einer neuen zufälligen Reihenfolge versuchen?</p>
+            <button class="btn-restart" onclick="restartQuiz()">Neu starten</button>
+        </div>
+    </main>
+
+    <script>
+        const quotes = [
+            {"quote": "„Niemand hat die Absicht, eine Mauer zu errichten!“", "author": "Walter Ulbricht", "role": "DDR-Staatsratsvorsitzender (SED)", "context": "15. Juni 1961, zwei Monate vor dem Bau der Berliner Mauer."},
+            {"quote": "„Wir wollen mehr Demokratie wagen.“", "author": "Willy Brandt", "role": "Bundeskanzler (SPD)", "context": "Aus seiner ersten Regierungserklärung am 28. Oktober 1969."},
+            {"quote": "„Es geht ein Ruck durch Deutschland.“", "author": "Roman Herzog", "role": "Bundespräsident", "context": "Aus seiner berühmten Berliner Rede im Jahr 1997."},
+            {"quote": "„Wir schaffen das!“", "author": "Angela Merkel", "role": "Bundeskanzlerin (CDU)", "context": "31. August 2015, bezogen auf die Aufnahme von Geflüchteten."},
+            {"quote": "„Ich liebe doch alle – alle Menschen.“", "author": "Erich Mielke", "role": "DDR-Minister für Staatssicherheit (SED)", "context": "November 1989 vor der DDR-Volkskammer, als er sich rechtfertigen musste."},
+            {"quote": "„Es ist besser, nicht zu regieren, als falsch zu regieren.“", "author": "Christian Lindner", "role": "Parteivorsitzender (FDP)", "context": "November 2017 beim Abbruch der Jamaika-Sondierungsgespräche."},
+            {"quote": "„Ich gebe Ihnen mein Ehrenwort – ich wiederhole: mein Ehrenwort – , dass die gegen mich erhobenen Vorwürfe haltlos sind.“", "author": "Uwe Barschel", "role": "Ministerpräsident Schleswig-Holstein (CDU)", "context": "1987 während der Barschel-Affäre kurz vor seinem Tod."},
+            {"quote": "„Entscheidend ist, was hinten rauskommt.“", "author": "Helmut Kohl", "role": "Bundeskanzler (CDU)", "context": "1984 in einer Pressekonferenz über den Erfolg von Politik."},
+            {"quote": "„Mit Verlaub, Herr Präsident, Sie sind ein Arschloch!“", "author": "Joschka Fischer", "role": "Bundestagsabgeordneter (Grüne)", "context": "1984 im Bundestag zu Vizepräsident Richard Stücklen."},
+            {"quote": "„Bürgerbegehren, das klingt so nach Bürgerbegehren.“", "author": "Edmund Stoiber", "role": "Ministerpräsident Bayern (CSU)", "context": "Einer seiner rhetorischen Stolpersteine (bekannt auch durch die Transrapid-Rede)."},
+            {"quote": "„Ich warne Sie. Wer sich uns in den Weg stellt, wird zermalmt.“", "author": "Kurt Schumacher", "role": "SPD-Parteivorsitzender", "context": "In der Nachkriegszeit über den unbedingten Willen zum Wiederaufbau der SPD."},
+            {"quote": "„Die Rente ist sicher.“", "author": "Norbert Blüm", "role": "Bundesarbeitsminister (CDU)", "context": "Legendärer Slogan einer Werbekampagne für die gesetzliche Rentenversicherung 1986."},
+            {"quote": "„Wer Visionen hat, sollte zum Arzt gehen.“", "author": "Helmut Schmidt", "role": "Bundeskanzler (SPD)", "context": "Ein pragmatischer Konter während eines Wahlkampfs in den 1970er Jahren."},
+            {"quote": "„Das Netz ist für uns alle Neuland.“", "author": "Angela Merkel", "role": "Bundeskanzlerin (CDU)", "context": "2013 beim Besuch des US-Präsidenten Barack Obama in Berlin."},
+            {"quote": "„Die Kunst des Machbaren.“", "author": "Otto von Bismarck", "role": "Reichskanzler", "context": "Seine berühmte Definition von Politik als „Pragmatismus“."},
+            {"quote": "„Jetzt wächst zusammen, was zusammengehört.“", "author": "Willy Brandt", "role": "Altbundeskanzler (SPD)", "context": "10. November 1989, am Tag nach dem Fall der Berliner Mauer (leicht paraphrasiert)."},
+            {"quote": "„Isch over.“", "author": "Wolfgang Schäuble", "role": "Bundesfinanzminister (CDU)", "context": "2015 am Rande von Verhandlungen zur Euro-Krise über die griechischen Vorschläge."},
+            {"quote": "„Bürgerinnen und Bürger, liebe Neger...“", "author": "Heinrich Lübke", "role": "Bundespräsident (CDU)", "context": "Ein ihm lang zugeschriebener, aber historisch umstrittener Fauxpas beim Staatsbesuch in Liberia 1962."},
+            {"quote": "„Ich tauge nicht zum Denkmal.“", "author": "Ludwig Erhard", "role": "Bundeskanzler & Wirtschaftsminister (CDU)", "context": "Über seine Rolle als „Vater des Wirtschaftswunders“."},
+            {"quote": "„Das war kein Versprecher, das war ein Denker.“", "author": "Franz Josef Strauß", "role": "Ministerpräsident Bayern (CSU)", "context": "Über seine eigenen, oft provokanten und scharfzüngigen Reden."},
+            {"quote": "„Keine Experimente!“", "author": "Konrad Adenauer", "role": "Bundeskanzler (CDU)", "context": "Hocheffektiver Bundestagswahlkampf-Slogan der CDU von 1957."},
+            {"quote": "„Ich kann mir nicht helfen, ich finde mich toll.“", "author": "Gerhard Schröder", "role": "Bundeskanzler (SPD)", "context": "Ein ironisches Selbstzitat aus seiner Amtszeit."},
+            {"quote": "„Freiheit ist immer Freiheit des Andersdenkenden.“", "author": "Rosa Luxemburg", "role": "Mitbegründerin der KPD / Spartakusbund", "context": "Aus einer Randnote zur russischen Revolution, heute oft zitiert."},
+            {"quote": "„Wir haben die Absicht, eine friedliche Revolution zu machen.“", "author": "Bärbel Bohley", "role": "Bürgerrechtlerin (Neues Forum)", "context": "Herbst 1989 in der DDR."},
+            {"quote": "„Mehr Licht!“", "author": "Johann Wolfgang von Goethe", "role": "Geheimer Rat / Staatsmann in Weimar", "context": "Zwar primär Dichter, aber als Minister in Weimar auch Staatsmann. Seine angeblich letzten Worte (1832)."},
+            {"quote": "„Ich habe verstanden.“", "author": "François Mitterrand", "role": "Präsident Frankreichs", "context": "Aus dem Französischen („Je vous ai compris“). Wichtig im Kontext der deutsch-französischen Freundschaft."},
+            {"quote": "„Das Boot ist voll.“", "author": "Eduard von Steiger", "role": "Schweizer Bundesrat", "context": "1942 bezüglich der Schweizer Flüchtlingspolitik im Zweiten Weltkrieg."},
+            {"quote": "„Es gibt kein Recht auf Faulheit in unserer Gesellschaft.“", "author": "Gerhard Schröder", "role": "Bundeskanzler (SPD)", "context": "2001 im Zuge der Debatten um die späteren Arbeitsmarktreformen (Hartz IV)."},
+            {"quote": "„Ich bin ein Berliner.“", "author": "John F. Kennedy", "role": "US-Präsident", "context": "26. Juni 1963 vor dem Rathaus Schöneberg in West-Berlin als Zeichen der Solidarität."},
+            {"quote": "„Das tritt nach meiner Kenntnis… ist das sofort… unverzüglich.“", "author": "Günter Schabowski", "role": "DDR-Politbüromitglied (SED)", "context": "9. November 1989, die legendäre Antwort auf die Frage nach der Reiseregelung, die die Mauer öffnete."}
+        ];
+
+        let currentQuestions = [];
+        let currentIndex = 0;
+
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function initQuiz() {
+            currentQuestions = shuffleArray(quotes);
+            currentIndex = 0;
+            document.getElementById('game-container').style.display = 'block';
+            document.getElementById('end-screen').style.display = 'none';
+            showQuestion();
+        }
+
+        function generateMultipleChoiceOptions(correctAuthor) {
+            // Get all unique authors except the correct one
+            let allAuthors = [...new Set(quotes.map(q => q.author))].filter(a => a !== correctAuthor);
+            // Shuffle and pick 3
+            allAuthors = shuffleArray(allAuthors).slice(0, 3);
+            // Add correct one and shuffle again
+            let choices = shuffleArray([...allAuthors, correctAuthor]);
+            return choices;
+        }
+
+        function showQuestion() {
+            const q = currentQuestions[currentIndex];
+            document.getElementById('quote-display').innerText = q.quote;
+            document.getElementById('author-display').innerText = q.author;
+            document.getElementById('role-display').innerText = q.role;
+            document.getElementById('context-display').innerHTML = `<strong>Kontext:</strong> ${q.context}`;
+            
+            // Build Multiple Choice Options for the help panel
+            const choices = generateMultipleChoiceOptions(q.author);
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+            choices.forEach(choice => {
+                const item = document.createElement('div');
+                item.className = 'option-item';
+                item.innerText = choice;
+                grid.appendChild(item);
+            });
+
+            // UI Reset
+            document.getElementById('solution-area').style.display = 'none';
+            document.getElementById('help-area').style.display = 'none';
+            document.getElementById('btn-help').style.display = 'inline-block';
+            document.getElementById('btn-show').style.display = 'inline-block';
+            document.getElementById('btn-next').style.display = 'none';
+            
+            // Progress
+            const total = currentQuestions.length;
+            document.getElementById('status-text').innerText = `Frage ${currentIndex + 1} von ${total}`;
+            document.getElementById('progress-fill').style.width = `${((currentIndex) / total) * 100}%`;
+        }
+
+        function showHelp() {
+            document.getElementById('help-area').style.display = 'block';
+            document.getElementById('btn-help').style.display = 'none';
+        }
+
+        function showSolution() {
+            document.getElementById('help-area').style.display = 'none';
+            document.getElementById('solution-area').style.display = 'block';
+            document.getElementById('btn-help').style.display = 'none';
+            document.getElementById('btn-show').style.display = 'none';
+            document.getElementById('btn-next').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < currentQuestions.length) {
+                showQuestion();
+            } else {
+                document.getElementById('progress-fill').style.width = '100%';
+                document.getElementById('game-container').style.display = 'none';
+                document.getElementById('end-screen').style.display = 'block';
+            }
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        window.onload = initQuiz;
+    </script>
+</body>
+</html>
